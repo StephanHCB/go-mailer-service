@@ -9,3 +9,6 @@
 test/contract/*/log/**
 main
 
+# local config files
+config.yaml
+secrets.yaml

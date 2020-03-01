@@ -153,4 +153,38 @@ I chose to go with [gin](https://github.com/gin-gonic/gin). We'll see how that t
 
 ### Requirement: Configuration
 
+[spf13/viper](https://github.com/spf13/viper) provides configuration file handling
+- get config from JSON, YAML, envfile, Java properties file, environment variables, command line flags, defaults
+- can live watch for changes (not needed here)
+- supports some [remote key/value stores](https://github.com/spf13/viper#remote-keyvalue-store-support) 
+
+[spf13/pflag](https://github.com/spf13/pflag) provides support for parsing GNU style command line flags.
+
+If you need a more complex command line interface, take a look 
+at [spf13/cobra](https://github.com/spf13/cobra), which extends pflags.
+
+### Requirement: Testing
+
+In go, unit tests reside in the package directory, in files called `*_test.go`.
+
+TODO Mocking
+
+#### Acceptance Tests
+
+I place acceptance tests under `test/acceptance`, and possibly use sub-packages if specific interface implementation
+mocks are needed (a package cannot provide two implementations of the same interface). I have adopted the convention
+of calling files `*_acc_test.go` if they contain actual acceptance tests.
+
+Use the built-in [httptest package](https://golang.org/pkg/net/http/httptest/#Server) for starting up the service
+for tests.
+
+[hashicorp/go-memdb](https://github.com/hashicorp/go-memdb) provides an in-memory database. In order to
+avoid the dependency on a real database on developer machines, I often just include it among the available 
+database at run-time, and make the selection a configuration switch.
+
+[smartystreets/goconvey](https://github.com/smartystreets/goconvey) provides a convenient library for
+writing your acceptance tests BDD-style (given/when/then) including in-browser reports.
+
+#### Consumer Driven Contract Tests
+
 ...
