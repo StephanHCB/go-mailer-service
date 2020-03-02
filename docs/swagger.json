@@ -1,0 +1,116 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "Documentation of our mailer-service API.",
+    "title": "awesome.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "paths": {
+    "/email/send": {
+      "get": {
+        "tags": [
+          "email-tag"
+        ],
+        "summary": "This will eventually send an email.",
+        "operationId": "sendEmailEndpoint",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/emailDto"
+            }
+          }
+        ],
+        "responses": {
+          "501": {
+            "$ref": "#/responses/errorResponse"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "emailDto": {
+      "type": "object",
+      "title": "Model for EmailDto.",
+      "properties": {
+        "body": {
+          "description": "The email body",
+          "type": "string",
+          "x-go-name": "Body"
+        },
+        "subject": {
+          "description": "The email subject",
+          "type": "string",
+          "x-go-name": "Subject"
+        },
+        "to_address": {
+          "description": "The email address to send to",
+          "type": "string",
+          "x-go-name": "ToAddress"
+        }
+      },
+      "x-go-name": "EmailDto",
+      "x-go-package": "github.com/StephanHCB/go-mailer-service/api/v1/email"
+    },
+    "errorDto": {
+      "type": "object",
+      "title": "Model for the generic error response.",
+      "properties": {
+        "details": {
+          "description": "Additional details",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "Details"
+        },
+        "message": {
+          "description": "The error code",
+          "type": "string",
+          "x-go-name": "Message"
+        },
+        "requestid": {
+          "description": "The request id associated with this request",
+          "type": "string",
+          "x-go-name": "RequestId"
+        },
+        "timestamp": {
+          "description": "The timestamp at which the error occurred",
+          "type": "string",
+          "x-go-name": "Timestamp"
+        }
+      },
+      "x-go-name": "ErrorDto",
+      "x-go-package": "github.com/StephanHCB/go-mailer-service/api/v1/apierrors"
+    }
+  },
+  "responses": {
+    "errorResponse": {
+      "description": "The generic error response.",
+      "schema": {
+        "$ref": "#/definitions/errorDto"
+      },
+      "headers": {
+        "Body": {}
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basic": {
+      "type": "basic"
+    }
+  }
+}

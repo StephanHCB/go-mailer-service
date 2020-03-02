@@ -103,6 +103,11 @@ a section below detailing what go libraries I have looked at, and which
 one I have ultimately decided to use, and what I have learned in the
 process.
 
+_I have a fair bit of experience with Spring Boot / Spring Cloud, so I will
+occasionally make notes of what I am missing coming from that perspective.
+If you find I just haven't found a library that does just that or something
+similar, do send me a message. I am very happy to learn._
+
 ## Developer Instructions
 
 ### Development Project Setup
@@ -149,6 +154,16 @@ There are three possible approaches:
 
 I chose to go with [gin](https://github.com/gin-gonic/gin). We'll see how that turns out.
 
+## Implementation Experience with Gin
+
+- Easily supports Singleton Controller/Service/Repository by passing down the `gin.Context`  
+    - but this allows lower layers direct access to the web request/response, 
+        so it takes a little bit more discipline not to abuse this, compared to e.g. gorilla/mux
+        handler functions and passing around a `context.Context`. Might want to
+        wrap it to give access just to what should be available?
+ 
+...
+
 ## Fulfilling the Requirements with Gin 
 
 ### Requirement: Configuration
@@ -162,6 +177,71 @@ I chose to go with [gin](https://github.com/gin-gonic/gin). We'll see how that t
 
 If you need a more complex command line interface, take a look 
 at [spf13/cobra](https://github.com/spf13/cobra), which extends pflags.
+
+_And here we come to the first piece that seems lacking a bit. In a Spring Boot web application I would only
+have to declare the @configuration classes with the fields I want, everything else is opinionated auto-setup
+with zero lines of boilerplate code._
+
+_What I would wish for here is a library that sits on top of viper and pflag, and I just give it a set of
+hierarchical structs that represent my configuration (with possible default values coded right in, descriptions
+and optional overrides for naming in the various config formats as backtick metadata like `yaml:"server" env:"CONFIG_SERVER"`) 
+plus a list of profiles and associated configuration files to load, make a single setup call, and have all
+this set up for me._
+
+_Not to be misunderstood, I actually love that no auto-magic is happening. I have spent too much time
+hunting down bugs introduced by Spring auto discovery and its confusing precedence rules. 
+With what I'm proposing, libraries could offer exported
+structs for their configuration (many already do), all I would need to do is reference these structs
+somewhere in my configuration, and hey, presto, you can set it all up from outside configuration,
+and then I just have to code up a single function that uses these values to configure each library._ 
+
+#### Feature Toggles
+
+TODO
+
+### Requirement: API Docs
+
+[go-swagger/go-swagger](https://github.com/go-swagger/go-swagger) provides Swagger / OpenAPI v3 integration.
+- can be used to generate stub code from swagger api description, but I prefer working the other way around to avoid
+  hassles with code generators. So I like that this package can also [generate a swagger specification from
+  annotated code](https://goswagger.io/use/spec.html).
+- Note that this does not mean I do not follow api first principles, I just prototype my API in code form using types
+  and interfaces in the api package, which I then implement. Much less chance of api docs and code deviating.
+
+After a lot of fiddling, I found two articles on medium.com that were very helpful:
+- [generate swagger specification from go source code](https://medium.com/@pedram.esmaeeli/generate-swagger-specification-from-go-source-code-648615f7b9d9)
+- [serve swaggerui within your golang application](https://medium.com/@ribice/serve-swaggerui-within-your-golang-application-5486748a5ed4)
+
+Here's what I ended up doing:
+
+In order to compile the `swagger` binary, run this command while inside your project's root directory
+
+`go install github.com/go-swagger/go-swagger/cmd/swagger`
+
+Go now builds a binary called `swagger` and puts it in your `$GOPATH/bin`. You should now be able
+to call it, if you have correctly added your `$GOPATH/bin` to your PATH.
+
+Now you can generate swagger.json:
+
+`swagger generate spec -o docs/swagger.json --scan-models`
+
+Serving the swagger ui with the swagger serve command didn't work due to some CORS issues on localhost, and 
+besides we want the service to be able to serve swagger-ui and the generated json file anyway (though we'll have
+to remember to add security later).
+
+So `git clone https://github.com/swagger-api/swagger-ui` somewhere and copy the LICENSE and the dist files
+over into `third_party/swagger_ui`, deleting the .map files to conserve space. Then add static
+serve directives for gin.
+
+_I have to say, the documentation for this is very cryptic. Also, I don't like that I seem to be forced to
+add extra data types just so I can document the response for a REST api using models. On the other hand
+I remember struggling with the documentation for SpringFox, too._
+
+_I like how the swagger spec is generated from godoc comments, which means I don't have to fire up the application
+and it can be easily checked in and served statically._
+
+_Statically serving swagger-ui, however, should really be available as a library that I can just reference. I won't
+mind having to add that one route in gin, though. Again this makes everything more explicit._
 
 ### Requirement: Testing
 
