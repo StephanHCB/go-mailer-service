@@ -197,7 +197,29 @@ and then I just have to code up a single function that uses these values to conf
 
 #### Feature Toggles
 
-TODO
+If you just have a few feature toggles, using hot reloading of your configuration can be a way
+to distribute them via configuration changes. This quickly becomes unwieldy, though.
+
+For more full-fledged solutions, see this 
+[overview article for available feature toggle solutions for golang](https://featureflags.io/go-feature-flags/).
+
+Some of these solutions are commercial and either depend on a server you install or on some app
+hosted in the cloud. For an enterprise scenario, this could even be reasonable, depending on 
+requirements.
+
+I am particularly interested in free, open source solutions that also seem to be under active development.
+Two candidates I looked at:
+- Decider [vsco/dcdr](https://github.com/vsco/dcdr), MIT license, latest release recent. It is using
+  a consul, etcd or Redis backend, and they are working on Zookeeper support. It supports audit trail
+  functionality using a git repository, into which it will push your keyspace and all
+  changes in JSON format. Comes with a CLI and statsd support.
+- [Unleash/unleash](https://github.com/Unleash/unleash), Apache 2 license, very active, released regularly.
+  Client implementations exist for Java, Node.js, Go, Python, and more. Although there is a commercial,
+  hosted version, it is free if you run your own server. Ready-made docker containers and good documentation
+  is linked on github.
+  
+If this example weren't so basic that I really don't need a feature toggle library, I would try Unleash first.
+From the code examples, using it seems straightforward.
 
 ### Requirement: API Docs
 
