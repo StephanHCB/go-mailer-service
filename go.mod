@@ -3,10 +3,12 @@ module github.com/StephanHCB/go-mailer-service
 go 1.14
 
 require (
+	github.com/gin-contrib/logger v0.0.2
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-swagger/go-swagger v0.22.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/pelletier/go-toml v1.6.0 // indirect
+	github.com/rs/zerolog v1.18.0
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

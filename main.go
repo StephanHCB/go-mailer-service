@@ -3,12 +3,14 @@ package main
 import (
 	_ "github.com/StephanHCB/go-mailer-service/docs"
 	"github.com/StephanHCB/go-mailer-service/internal/repository/config"
+	"github.com/StephanHCB/go-mailer-service/internal/repository/logging"
 	"github.com/StephanHCB/go-mailer-service/web"
-	"github.com/spf13/pflag"
 )
 
 func main() {
-	pflag.Parse()
+	logging.Setup()
 	config.Setup()
+	logging.PostConfigSetup()
+
 	web.Serve()
 }

@@ -52,11 +52,16 @@ Effectively, that adds lots of nonfunctional requirements concerning:
          [OAuth2](https://oauth.net/2/), [OIDC-compliant](https://openid.net/connect/) Identity Provider. 
          From our perspective, 
          the request includes a signed [JWT](https://jwt.io/) in the `Authorization` header. 
-         The signature must be validated for every request and the user information extracted
+         The signature must be validated for every request and the user information extracted.
+         Also, the token must be passed on in outgoing calls, but only to other internal services
+         participating in the auth domain.
        - part of the authorization ("are they allowed to do what is requested") 
          is also derived from claims in the JWT
 - **logging** must be JSON structured logging to the console, except
   on local developer machines, where this would reduce readability.
+  When running in kubernetes, we assume we want to log to console using 
+  [Elastic Common Schema](https://www.elastic.co/guide/en/ecs/current),
+  so that log output can be shipped directly to logstash.
 - **monitoring**
     - _health and readiness end points_ must be provided
     - _prometheus_ endpoints must be available and provide appropriate
@@ -264,6 +269,34 @@ and it can be easily checked in and served statically._
 
 _Statically serving swagger-ui, however, should really be available as a library that I can just reference. I won't
 mind having to add that one route in gin, though. Again this makes everything more explicit._
+
+### Requirement: Logging
+
+Although there are many other choices, none of which looks bad, my most promising candidates offer a choice 
+between a well aged solution
+with a stable api and a very current libary that seems to focus on doing exactly what I need:
+
+- [sirupsen/logrus](https://github.com/sirupsen/logrus), MIT license, is in maintenance mode but actively maintained.
+  This might actually be an advantage, as it promises a stable api. It has very nice support for JSON structured
+  logging, basic setup can literally be done in a single line, but judging from some of the benchmarks,
+  its performance is not the best.
+- [rs/zerolog](https://github.com/rs/zerolog), MIT license, very active. This library is focused on JSON structured
+  logging, but also has a developer console mode - just what we want. Context integration is built in if you
+  use context.Context, including handling of context sensitive fields such as our desired RequestId.
+  
+I am going to use zerolog for this example, simply because reading the code examples I liked its interface
+with the chaining calls and the .Ctx() call, and it does many of the things I want to see by default.
+
+As we are using gin.Context, we will have to implement a small middleware to place a context.Context
+in the Keys map of the gin context. This also nicely solves the problem of preventing lazy coders from 
+accessing the http request/response in lower layers.
+
+Integration with gin, so it uses zerolog, can be found in [gin-contrib/logger](https://github.com/gin-contrib/logger). 
+
+_One problem I faced was that the field names all had to be adjusted to match the ECS standard. Another thing
+that could be a ready-made library, really._
+
+ 
 
 ### Requirement: Testing
 

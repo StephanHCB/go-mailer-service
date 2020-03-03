@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
 
@@ -11,8 +12,9 @@ var failFunction = fail
 var warnFunction = warn
 
 func validate() {
-	checkLength(0, 255, configKeyServerAddress)
-	checkValidPortNumber(configKeyServerPort)
+	for _, item := range configItems {
+		item.Validate(item.Key)
+	}
 }
 
 func checkLength(min int, max int, key string) {
@@ -30,10 +32,10 @@ func checkValidPortNumber(key string) {
 }
 
 func fail(err error) {
-	// TODO fatal logging and proper application stop
-	panic(err)
+	// this will os.exit 1
+	log.Fatal().Err(err)
 }
 
 func warn(message string) {
-	// TODO log a warning with this message
+	log.Warn().Msg(message)
 }

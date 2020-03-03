@@ -12,13 +12,25 @@ var secretsPath string
 func init() {
 	pflag.StringVar(&configPath, "config-path", "", "config file path without file name")
 	pflag.StringVar(&secretsPath, "secrets-path", "", "secrets file path without file name")
-	pflag.String(configKeyServerAddress, "", configDescriptionServerAddress)
-	pflag.Uint(configKeyServerPort, 0, ConfigDescriptionServerPort)
+
+	for _, item := range configItems {
+		// must set null default values here, or else this value will overwrite config values from config file
+		if _, ok := item.Default.(string); ok {
+			pflag.String(item.Key, "", item.Description)
+		}
+		if _, ok := item.Default.(uint); ok {
+			pflag.Uint(item.Key, 0, item.Description)
+		}
+		if _, ok := item.Default.([]string); ok {
+			pflag.StringSlice(item.Key, []string{}, item.Description)
+		}
+	}
 }
 
 func setupFlags() {
-	bindFlag(configKeyServerAddress)
-	bindFlag(configKeyServerPort)
+	for _, item := range configItems {
+		bindFlag(item.Key)
+	}
 }
 
 func bindFlag(key string) {

@@ -14,7 +14,7 @@ type EmailDto struct {
 	Body      string `json:"body"`
 }
 
-// TODO this seems needed to express using a model
+// tip: this seems needed to express using a model
 
 // Parameters for sending Emails
 //
