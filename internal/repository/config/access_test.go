@@ -1,12 +1,13 @@
 package config
 
 import (
+	"github.com/StephanHCB/go-autumn-config"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestServerAddress(t *testing.T) {
-	setupDefaults()
+	auconfig.SetupDefaultsOnly(configItems, failFunction, warnFunction)
 
 	expected := ":8080"
 	actual := ServerAddress()
