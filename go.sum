@@ -16,6 +16,8 @@ github.com/StephanHCB/go-autumn-config v0.1.0 h1:LVliEboaNY4VHo9xb8ui76wC90a+1jn
 github.com/StephanHCB/go-autumn-config v0.1.0/go.mod h1:RrVtlbTsN9gUGdkWR5QrLDVCa/KVH9TIqP2ub/bdJYs=
 github.com/StephanHCB/go-autumn-config v0.1.1 h1:eaEVAJgSW88xwKVS1lx1KgqthBYUL1e7CZ1ThSAY1hI=
 github.com/StephanHCB/go-autumn-config v0.1.1/go.mod h1:RrVtlbTsN9gUGdkWR5QrLDVCa/KVH9TIqP2ub/bdJYs=
+github.com/StephanHCB/go-autumn-config v0.1.2 h1:ugggiUood+uDUYJ4Mu4drBlW6kWPBtEvC+/MGvHdvyI=
+github.com/StephanHCB/go-autumn-config v0.1.2/go.mod h1:RrVtlbTsN9gUGdkWR5QrLDVCa/KVH9TIqP2ub/bdJYs=
 github.com/StephanHCB/go-autumn-config-api v0.1.2 h1:Wx7vYPFqzg9S7p/OinFNtLhZGSbDKoOenyow1GnTbQE=
 github.com/StephanHCB/go-autumn-config-api v0.1.2/go.mod h1:6nJBwuT1uURHApOSFr6Rw+naK2YkO+sAduwEWZ0qsSU=
 github.com/agnivade/levenshtein v1.0.1/go.mod h1:CURSv5d9Uaml+FovSIICkLbAUZ9S4RqaHDIsdSBg7lM=

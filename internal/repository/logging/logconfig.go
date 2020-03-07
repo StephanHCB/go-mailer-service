@@ -16,7 +16,7 @@ func Setup() {
 	zerolog.LevelFieldName = "log.level"
 	zerolog.MessageFieldName = "message" // correct by default
 
-	// assume JSON logging at first, until config is loaded
+	// assume JSON logging at first, until configuration is loaded
 	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 }
 

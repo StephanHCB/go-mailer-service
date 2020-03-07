@@ -3,7 +3,7 @@ module github.com/StephanHCB/go-mailer-service
 go 1.14
 
 require (
-	github.com/StephanHCB/go-autumn-config v0.1.1
+	github.com/StephanHCB/go-autumn-config v0.1.2
 	github.com/StephanHCB/go-autumn-config-api v0.1.2
 	github.com/gin-contrib/logger v0.0.2
 	github.com/gin-gonic/gin v1.5.0

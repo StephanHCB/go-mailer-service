@@ -2,7 +2,7 @@ package web
 
 import (
 	"fmt"
-	"github.com/StephanHCB/go-mailer-service/internal/repository/config"
+	"github.com/StephanHCB/go-mailer-service/internal/repository/configuration"
 	"github.com/StephanHCB/go-mailer-service/web/controller/emailctl"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
@@ -27,7 +27,7 @@ func Serve() {
 	server.Static("/swagger-ui/", "third_party/swagger_ui")
 	server.StaticFile("swagger.json", "docs/swagger.json")
 
-	address := config.ServerAddress()
+	address := configuration.ServerAddress()
 	log.Info().Msg("Starting web server on " + address)
 	err := server.Run(address)
 	if err != nil {

@@ -183,11 +183,11 @@ I chose to go with [gin](https://github.com/gin-gonic/gin). We'll see how that t
 If you need a more complex command line interface, take a look 
 at [spf13/cobra](https://github.com/spf13/cobra), which extends pflags.
 
-_And here we come to the first piece that seems lacking a bit. In a Spring Boot web application I would only
+_And here we come to the first piece that seemed lacking a bit. In a Spring Boot web application I would only
 have to declare the @configuration classes with the fields I want, everything else is opinionated auto-setup
 with zero lines of boilerplate code._
 
-_What I would wish for here is a library that sits on top of viper and pflag, and I just give it a set of
+_What I would have wished for here is a library that sits on top of viper and pflag, and I just give it a set of
 hierarchical structs that represent my configuration (with possible default values coded right in, descriptions
 and optional overrides for naming in the various config formats as backtick metadata like `yaml:"server" env:"CONFIG_SERVER"`) 
 plus a list of profiles and associated configuration files to load, make a single setup call, and have all
@@ -199,6 +199,9 @@ With what I'm proposing, libraries could offer exported
 structs for their configuration (many already do), all I would need to do is reference these structs
 somewhere in my configuration, and hey, presto, you can set it all up from outside configuration,
 and then I just have to code up a single function that uses these values to configure each library._ 
+
+_**Update:** I have written such a library and called 
+it [go-autumn-config](https://github.com/StephanHCB/go-autumn-config)._
 
 #### Feature Toggles
 
