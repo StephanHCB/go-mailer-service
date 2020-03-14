@@ -1,8 +1,18 @@
 # go-mailer-service
 
+## References
+
+This work was heavily inspired by
+
+- Peter Bourgon's [Blog article about enterprise microservices](https://peter.bourgon.org/go-kit/)
+- Erik Lupander's [Blog series about how to implement an enterprise microservice in go](https://callistaenterprise.se/blogg/teknik/2017/02/17/go-blog-series-part1/)
+- a talk by Mario-Leander Reimer I recently attended at [GoDays Berlin](https://www.youtube.com/watch?v=x26Q7iGpblw)
+- many many excellent libraries and examples, you will find links in the article below
+- ... and finally, [Spring Boot](https://spring.io/projects/spring-boot) and [Spring Cloud](https://spring.io/projects/spring-cloud).
+
 ## Overview
 
-This service is part of my example for [enterprise microservices](https://peter.bourgon.org/go-kit/) in 
+This service is part of my example for **enterprise microservices** in 
 [go](https://golang.org/).
 
 The business scenario is rather contrived and not really the point here:
@@ -150,7 +160,10 @@ There are three possible approaches:
       find example code for most of the requirements that aren't
       directly supported.
     - I found some other frameworks, but they are either outdated,
-      or aren't nearly as active as gin. 
+      or aren't nearly as active as gin.
+    - [go-chi/chi](https://github.com/go-chi/chi), another very active
+      MIT licensed framework that already includes middlewares for
+      many of our nonfunctional requirements.
 - use just a Router
     - [gorilla/mux](https://github.com/gorilla/mux), this is a low
       level choice that only has a http request router, but if you 
@@ -158,6 +171,10 @@ There are three possible approaches:
       your framework, this might actually be useful.
 
 I chose to go with [gin](https://github.com/gin-gonic/gin). We'll see how that turns out.
+
+After finding [chi](https://github.com/go-chi/chi), I decided to use that framework
+for my [go-campaign-service](https://github.com/StephanHCB/go-campaign-service), the other
+side of this example. We'll see which one works better.
 
 ## Implementation Experience with Gin
 
@@ -202,6 +219,8 @@ and then I just have to code up a single function that uses these values to conf
 
 _**Update:** I have written such a library and called 
 it [go-autumn-config](https://github.com/StephanHCB/go-autumn-config)._
+
+_**Update:** And only one day after my own version, I found [alexflint/go-arg](https://github.com/alexflint/go-arg)._
 
 #### Feature Toggles
 
@@ -299,13 +318,13 @@ Integration with gin, so it uses zerolog, can be found in [gin-contrib/logger](h
 _One problem I faced was that the field names all had to be adjusted to match the ECS standard. Another thing
 that could be a ready-made library, really._
 
- 
-
 ### Requirement: Testing
 
 In go, unit tests reside in the package directory, in files called `*_test.go`.
 
+```
 TODO Mocking
+```
 
 #### Acceptance Tests
 
@@ -324,5 +343,19 @@ database at run-time, and make the selection a configuration switch.
 writing your acceptance tests BDD-style (given/when/then) including in-browser reports.
 
 #### Consumer Driven Contract Tests
+
+This microservice uses [pact-go](https://github.com/pact-foundation/pact-go#installation) for contract tests.
+
+Before you can run the contract tests in this repository, you need to run the client side contract tests
+in the [go-campaign-service](https://github.com/StephanHCB/go-campaign-service) to generate
+the contract specification.
+
+You are expected to clone that repository into a directory called `go-campaign-service`
+right next to this repository. If you wish to place your contract specs somewhere else, simply change the
+path or URL in `test/contract/producer/setup_ctr_test.go`.
+
+```
+TODO actually implement example
+```
 
 ...
