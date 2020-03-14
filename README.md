@@ -172,9 +172,9 @@ There are three possible approaches:
 
 I chose to go with [gin](https://github.com/gin-gonic/gin). We'll see how that turns out.
 
-After finding [chi](https://github.com/go-chi/chi), I decided to use that framework
+After finding [chi](https://github.com/go-chi/chi), I decided to try that framework
 for my [go-campaign-service](https://github.com/StephanHCB/go-campaign-service), the other
-side of this example. We'll see which one works better.
+side of this example.
 
 ## Implementation Experience with Gin
 
@@ -183,8 +183,15 @@ side of this example. We'll see which one works better.
         so it takes a little bit more discipline not to abuse this, compared to e.g. gorilla/mux
         handler functions and passing around a `context.Context`. Might want to
         wrap it to give access just to what should be available?
- 
+- Has a good example for [including static files in the binary](https://github.com/gin-gonic/examples/tree/master/assets-in-binary) 
+
 ...
+
+## Implementation Experience with Chi
+
+- It's much more low level, for example I needed to write actual code to serve static files
+- Smaller binary, much smaller dependencies footprint
+
 
 ## Fulfilling the Requirements with Gin 
 
@@ -257,9 +264,10 @@ From the code examples, using it seems straightforward.
 - Note that this does not mean I do not follow api first principles, I just prototype my API in code form using types
   and interfaces in the api package, which I then implement. Much less chance of api docs and code deviating.
 
-After a lot of fiddling, I found two articles on medium.com that were very helpful:
+After a lot of fiddling and not getting it to work right, I found some articles that were very helpful:
 - [generate swagger specification from go source code](https://medium.com/@pedram.esmaeeli/generate-swagger-specification-from-go-source-code-648615f7b9d9)
 - [serve swaggerui within your golang application](https://medium.com/@ribice/serve-swaggerui-within-your-golang-application-5486748a5ed4)
+- [Create Golang API documentation with SwaggerUI](https://www.ribice.ba/swagger-golang/)
 
 Here's what I ended up doing:
 
@@ -289,8 +297,16 @@ I remember struggling with the documentation for SpringFox, too._
 _I like how the swagger spec is generated from godoc comments, which means I don't have to fire up the application
 and it can be easily checked in and served statically._
 
+#### Statically serving swagger-ui
+
 _Statically serving swagger-ui, however, should really be available as a library that I can just reference. I won't
 mind having to add that one route in gin, though. Again this makes everything more explicit._
+
+Also see [how to embed static files in go app](https://tech.townsourced.com/post/embedding-static-files-in-go/).
+I agree with the author's choice: [shurcooL/vfsgen](https://github.com/shurcooL/vfsgen) is the way to go.
+
+_**Update:** I have written a small library that does it out of the box: 
+[go-autumn-web-swagger-ui](https://github.com/StephanHCB/go-autumn-web-swagger-ui)._
 
 ### Requirement: Logging
 

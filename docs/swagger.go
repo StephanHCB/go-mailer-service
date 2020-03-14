@@ -1,4 +1,4 @@
-// Package classification awesome.
+// Package classification mailer-service.
 //
 // Documentation of our mailer-service API.
 //
