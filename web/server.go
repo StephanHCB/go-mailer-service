@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/StephanHCB/go-mailer-service/internal/repository/configuration"
 	"github.com/StephanHCB/go-mailer-service/web/controller/emailctl"
+	"github.com/StephanHCB/go-mailer-service/web/controller/swaggerctl"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -22,10 +23,7 @@ func Serve() {
 
 	_ = emailctl.Create(server)
 
-	// TODO move this out to a static files controller
-	// serve swagger-ui and swagger.json
-	server.Static("/swagger-ui/", "third_party/swagger_ui")
-	server.StaticFile("swagger.json", "docs/swagger.json")
+	swaggerctl.SetupSwaggerRoutes(server)
 
 	address := configuration.ServerAddress()
 	log.Info().Msg("Starting web server on " + address)

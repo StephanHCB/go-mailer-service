@@ -20,5 +20,6 @@ type ErrorDto struct {
 //
 // swagger:response errorResponse
 type ErrorResponse struct {
+	// in:body
 	Body ErrorDto
 }

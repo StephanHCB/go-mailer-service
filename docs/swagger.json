@@ -11,7 +11,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Documentation of our mailer-service API.",
-    "title": "awesome.",
+    "title": "mailer-service.",
     "version": "1.0.0"
   },
   "host": "localhost:8080",
@@ -23,7 +23,7 @@
           "email-tag"
         ],
         "summary": "This will eventually send an email.",
-        "operationId": "sendEmailEndpoint",
+        "operationId": "sendEmailParams",
         "parameters": [
           {
             "name": "Body",
@@ -102,9 +102,6 @@
       "description": "The generic error response.",
       "schema": {
         "$ref": "#/definitions/errorDto"
-      },
-      "headers": {
-        "Body": {}
       }
     }
   },

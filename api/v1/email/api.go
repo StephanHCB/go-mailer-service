@@ -18,14 +18,14 @@ type EmailDto struct {
 
 // Parameters for sending Emails
 //
-// swagger:parameters sendEmailEndpoint
+// swagger:parameters sendEmailParams
 type SendEmailParams struct {
 	// in:body
 	Body EmailDto
 }
 
 type EmailApi interface {
-	// swagger:route GET /email/send email-tag sendEmailEndpoint
+	// swagger:route GET /email/send email-tag sendEmailParams
 	// This will eventually send an email.
 	//
 	// responses:
