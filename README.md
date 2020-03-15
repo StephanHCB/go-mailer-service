@@ -338,6 +338,16 @@ logging middleware from looking at the code and
 _One problem I faced in both cases was that the field names all had to be adjusted to match the ECS standard. Another thing
 that could be a ready-made library, really._
 
+### Requirement: Persistence
+
+For relational databases, [jinzhu/gorm](https://github.com/jinzhu/gorm) is the go-to object relational mapper. 
+
+Further options for nosql or high throughput situations exist, such as [upper.io/db.v3](https://upper.io/db.v3),
+but for our purposes, gorm is just fine.
+
+See [go-campaign-service](https://github.com/StephanHCB/go-campaign-service) for further details and an example, as this
+service does not need any persistence.
+
 ### Requirement: Testing
 
 In go, unit tests reside in the package directory, in files called `*_test.go`.
