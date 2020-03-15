@@ -193,7 +193,7 @@ side of this example.
 - Smaller binary, much smaller dependencies footprint
 
 
-## Fulfilling the Requirements with Gin 
+## Fulfilling the Requirements with Gin and Chi 
 
 ### Requirement: Configuration
 
@@ -282,14 +282,6 @@ Now you can generate swagger.json:
 
 `swagger generate spec -o docs/swagger.json --scan-models`
 
-Serving the swagger ui with the swagger serve command didn't work due to some CORS issues on localhost, and 
-besides we want the service to be able to serve swagger-ui and the generated json file anyway (though we'll have
-to remember to add security later).
-
-So `git clone https://github.com/swagger-api/swagger-ui` somewhere and copy the LICENSE and the dist files
-over into `third_party/swagger_ui`, deleting the .map files to conserve space. Then add static
-serve directives for gin.
-
 _I have to say, the documentation for this is very cryptic. Also, I don't like that I seem to be forced to
 add extra data types just so I can document the response for a REST api using models. On the other hand
 I remember struggling with the documentation for SpringFox, too._
@@ -298,6 +290,14 @@ _I like how the swagger spec is generated from godoc comments, which means I don
 and it can be easily checked in and served statically._
 
 #### Statically serving swagger-ui
+
+Serving the swagger ui with the swagger serve command didn't work due to some CORS issues on localhost, and 
+besides we want the service to be able to serve swagger-ui and the generated json file anyway (though we'll have
+to remember to add security later).
+
+So `git clone https://github.com/swagger-api/swagger-ui` somewhere and copy the LICENSE and the dist files
+over into `third_party/swagger_ui`, deleting the .map files to conserve space. Then add static
+serve directives for gin.
 
 _Statically serving swagger-ui, however, should really be available as a library that I can just reference. I won't
 mind having to add that one route in gin, though. Again this makes everything more explicit._
@@ -331,7 +331,11 @@ accessing the http request/response in lower layers.
 
 Integration with gin, so it uses zerolog, can be found in [gin-contrib/logger](https://github.com/gin-contrib/logger). 
 
-_One problem I faced was that the field names all had to be adjusted to match the ECS standard. Another thing
+Integration with chi was a little less straightforward, but I was able to figure out their
+logging middleware from looking at the code and 
+[implement a replacement logger](https://github.com/StephanHCB/go-campaign-service/blob/master/web/middleware/logfilter/logfilter.go).
+
+_One problem I faced in both cases was that the field names all had to be adjusted to match the ECS standard. Another thing
 that could be a ready-made library, really._
 
 ### Requirement: Testing
