@@ -13,7 +13,7 @@ func Setup() {
 
 func fail(err error) {
 	// this will os.exit 1
-	log.Fatal().Err(err)
+	log.Fatal().Err(err).Msg(err.Error())
 }
 
 func warn(message string) {

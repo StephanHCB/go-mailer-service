@@ -35,5 +35,5 @@ func Serve() {
 }
 
 func fail(err error) {
-	log.Fatal().Err(err)
+	log.Fatal().Err(err).Msg(err.Error())
 }
