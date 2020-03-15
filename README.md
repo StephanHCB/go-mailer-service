@@ -341,12 +341,25 @@ that could be a ready-made library, really._
 ### Requirement: Persistence
 
 For relational databases, [jinzhu/gorm](https://github.com/jinzhu/gorm) is the go-to object relational mapper. 
+It includes direct support for mysql.
+[Oracle support](https://github.com/misterEggroll/gorm) is only available in a fork, currently still being worked on,
+and has some limitations.
 
 Further options for nosql or high throughput situations exist, such as [upper.io/db.v3](https://upper.io/db.v3),
 but for our purposes, gorm is just fine.
 
 See [go-campaign-service](https://github.com/StephanHCB/go-campaign-service) for further details and an example, as this
 service does not need any persistence.
+
+Also read [production ready connection pooling in go](https://making.pusher.com/production-ready-connection-pooling-in-go/).
+
+We have implemented a very basic in-memory persistence option, not at all optimized for performance, which can
+be used to demo the service and run some of the lower level tests. For any more complex situations, a
+real in-memory-database such as [hashicorp/go-memdb](https://github.com/hashicorp/go-memdb) should be considered.
+
+_On mysql, life is good. Everything is just as easy as it is with Spring Data,
+only with better performance and less memory footprint. On the other hand, Oracle support would need some
+contributor work._
 
 ### Requirement: Testing
 
