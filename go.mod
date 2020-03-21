@@ -3,11 +3,12 @@ module github.com/StephanHCB/go-mailer-service
 go 1.14
 
 require (
-	github.com/StephanHCB/go-autumn-config v0.1.2
-	github.com/StephanHCB/go-autumn-config-api v0.1.2
+	github.com/StephanHCB/go-autumn-config v0.1.5
+	github.com/StephanHCB/go-autumn-config-api v0.1.5
 	github.com/StephanHCB/go-autumn-web-swagger-ui v0.1.1
 	github.com/gin-contrib/logger v0.0.2
 	github.com/gin-gonic/gin v1.5.0
+	github.com/go-http-utils/headers v0.0.0-20181008091004-fed159eddc2a
 	github.com/go-swagger/go-swagger v0.22.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/pelletier/go-toml v1.6.0 // indirect

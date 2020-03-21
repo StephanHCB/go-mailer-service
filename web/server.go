@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/StephanHCB/go-mailer-service/internal/repository/configuration"
 	"github.com/StephanHCB/go-mailer-service/web/controller/emailctl"
+	"github.com/StephanHCB/go-mailer-service/web/controller/healthctl"
 	"github.com/StephanHCB/go-mailer-service/web/controller/swaggerctl"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,7 @@ import (
 
 var failFunction = fail
 
-func Serve() {
+func Create() *gin.Engine {
 	// turn off annoying printf logging from gin
 	gin.SetMode(gin.ReleaseMode)
 
@@ -23,7 +24,15 @@ func Serve() {
 
 	_ = emailctl.Create(server)
 
+	healthctl.Create(server)
+
 	swaggerctl.SetupSwaggerRoutes(server)
+
+	return server
+}
+
+func Serve() {
+	server := Create()
 
 	address := configuration.ServerAddress()
 	log.Info().Msg("Starting web server on " + address)

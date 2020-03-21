@@ -11,3 +11,11 @@ func ServerAddress() string {
 	return fmt.Sprintf("%v:%d", viper.GetString(configKeyServerAddress), viper.GetUint(configKeyServerPort))
 }
 
+func ServiceName() string {
+	return viper.GetString(configKeyServiceName)
+}
+
+func IsProfileActive(profileName string) bool {
+	profiles := viper.GetStringSlice("profiles")
+	return contains(profiles, profileName)
+}

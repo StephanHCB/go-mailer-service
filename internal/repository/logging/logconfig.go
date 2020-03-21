@@ -1,9 +1,10 @@
 package logging
 
 import (
+	"bytes"
+	"github.com/StephanHCB/go-mailer-service/internal/repository/configuration"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 	"os"
 )
 
@@ -21,22 +22,19 @@ func Setup() {
 }
 
 func PostConfigSetup() {
-	profiles := viper.GetStringSlice("profiles")
-	if contains(profiles, "local") {
-		// switch to developer friendly colored console log
+	if configuration.IsProfileActive("local") {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
+		log.Info().Msg("switching to developer friendly console log because profile 'local' is active")
 	} else {
-		// stay with JSON logging
-		serviceName := viper.GetString("service.name")
-		log.Logger = log.With().Str("service.id", serviceName).Logger()
+		// stay with JSON logging and add ECS service.id field
+		log.Logger = log.With().Str("service.id", configuration.ServiceName()).Logger()
 	}
 }
 
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
+var RecordedLogForTesting = new(bytes.Buffer)
+
+// alternative Setup function for testing that records log entries instead of writing them to console
+func SetupForTesting() {
+	Setup()
+	log.Logger = zerolog.New(RecordedLogForTesting).With().Timestamp().Logger()
 }

@@ -132,13 +132,51 @@ This service uses go modules to provide dependency management, see `go.mod`.
 If you place this repository OUTSIDE of your gopath, go build and go test will clone
 all required dependencies by default.
 
+If you change or add a dependency, you will need to do `go build main.go` to clone or update dependencies.
+
 ### Running on Localhost
 
-TODO
+On the command line, `go build main.go` will download all dependencies and build a standalone executable
+for you.
+
+The executable expects two configuration files `config.yaml` and `secrets.yaml` in the current directory.
+You can override their path locations by passing command line options as follows:
+
+```main --config-path=. --secrets-path=.``` 
+
+Find configuration templates under docs, copy them to the main directory and edit them so they fit your
+environment.
 
 ### Running the Automated Tests
 
-TODO
+This service comes with unit, acceptance, and consumer driven contract tests. 
+
+You can run all of these on the command line:
+
+```go test ./...```
+
+In order for the **contract tests** to work, you will need to perform some additional installation:
+
+#### Consumer Driven Contract Tests
+
+This microservice uses [pact-go](https://github.com/pact-foundation/pact-go#installation) for contract tests.
+
+This is the **producer** side.
+
+Before you can run the contract tests in this repository, you need to run the consumer side contract tests
+in the [go-campaign-service](https://github.com/StephanHCB/go-campaign-service) to generate
+the contract specification. 
+
+You are expected to clone that repository into a directory called `go-campaign-service`
+right next to this repository. If you wish to place your contract specs somewhere else, simply change the
+path or URL in `test/contract/producer/setup_ctr_test.go`. 
+
+```
+TODO: implement a real world example 
+```
+
+See the [readme for go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/README.md) for 
+installation instructions for the required tooling.
 
 ## Selecting a Web Framework/Library
 
@@ -185,15 +223,14 @@ side of this example.
         wrap it to give access just to what should be available?
 - Has a good example for [including static files in the binary](https://github.com/gin-gonic/examples/tree/master/assets-in-binary) 
 
-...
-
 ## Implementation Experience with Chi
 
 - It's much more low level, for example I needed to write actual code to serve static files
 - Smaller binary, much smaller dependencies footprint
+- Including static files in the binary can be done, too, but it needs a bit of implementation rather than a single line,
+  see [this example](https://github.com/StephanHCB/go-campaign-service/blob/master/web/controller/swaggerctl/swaggerctl.go)
 
-
-## Fulfilling the Requirements with Gin and Chi 
+## Fulfilling the Requirements
 
 ### Requirement: Configuration
 
@@ -338,6 +375,28 @@ logging middleware from looking at the code and
 _One problem I faced in both cases was that the field names all had to be adjusted to match the ECS standard. Another thing
 that could be a ready-made library, really._
 
+### Requirement: Tracing
+
+```
+TODO
+```
+
+### Requirement: Monitoring
+
+#### Liveness and Readiness Probes
+
+With our simple services, liveness and readiness probes can both be provided by the same very simple health endpoint.
+
+Go services start very fast and if configured correctly they will almost immediately be fully available, so this
+is not an uncommon approach. In a real-world scenario it would probably be a good idea to check the database
+connection pool for an abundance of error states before reporting healthy.
+
+#### Prometheus Integration 
+
+```
+TODO
+```
+
 ### Requirement: Persistence
 
 For relational databases, [jinzhu/gorm](https://github.com/jinzhu/gorm) is the go-to object relational mapper. 
@@ -361,13 +420,74 @@ _On mysql, life is good. Everything is just as easy as it is with Spring Data,
 only with better performance and less memory footprint. On the other hand, Oracle support would need some
 contributor work._
 
+### Requirement: Messaging
+
+```
+TODO
+```
+
+### Requirement: Resilience
+
+[Go Microservices blog series, part 11 - hystrix and resilience](https://callistaenterprise.se/blogg/teknik/2017/09/11/go-blog-series-part11/)
+
+[Don't use go's default http client](https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779)
+
+[A rant that nevertheless has useful tips](https://fasterthanli.me/blog/2020/i-want-off-mr-golangs-wild-ride/)
+(but some of the http client points of criticism would have been completely solved by using hystrix as shown
+in the first article)
+
+```
+TODO
+```
+
+### Requirement: Security
+
+#### Authentication and Authorization
+
+```
+TODO implement
+```
+
+```
+TODO security acceptance test example
+```
+
 ### Requirement: Testing
 
-In go, unit tests reside in the package directory, in files called `*_test.go`.
+This service comes with unit, acceptance, and consumer driven contract tests. 
 
-```
-TODO Mocking
-```
+You can run all of these on the command line:
+
+```go test ./...```
+
+In order for the **contract tests** to work, you will need to perform some additional installation.
+
+#### Unit Tests
+
+In go, unit tests reside in the package directory, in files called `*_test.go`. 
+
+Go executes tests 
+in parallel goroutines, one per package by default. If you keep your packages reasonably small, this
+leads to fast test execution while allowing you to set up mock implementation on a per-package basis.
+
+Note how I have wrapped calls to `log.Fatal()` or `os.Exit()` in function pointers kept in public vars. This allows me to
+simply swap the function pointers for test runs and obtain full code coverage except for the actual failFunction. 
+This is a common pattern used by e.g. pflag and viper, as well as many logging packages I've looked at.
+
+#### Mocking
+
+There are libraries for mocking that use code generators triggered by build stage comments, but I usually
+just write my own mocks in testing code. If all components are specified as interfaces which are then
+implemented in a package, writing mocks can be assisted by the IDE so much that I don't bother with
+specialized mocking packages.
+
+[GoMock](https://github.com/golang/mock) seems the be most common mock code generator if you find you are
+spending too much time maintaining your mocks. It's a code generator that can automatically implement interfaces.
+
+[h2non/gock](https://github.com/h2non/gock) is a library for mocking outgoing http connections. In my example
+I have so few of those, and they are all calls between services, that I have stuck with pact based consumer
+driven contract tests. If you have complex interactions that are hard to represent in the static pact scripts,
+this might be a good solution.
 
 #### Acceptance Tests
 
@@ -389,16 +509,7 @@ writing your acceptance tests BDD-style (given/when/then) including in-browser r
 
 This microservice uses [pact-go](https://github.com/pact-foundation/pact-go#installation) for contract tests.
 
-Before you can run the contract tests in this repository, you need to run the client side contract tests
-in the [go-campaign-service](https://github.com/StephanHCB/go-campaign-service) to generate
-the contract specification.
-
-You are expected to clone that repository into a directory called `go-campaign-service`
-right next to this repository. If you wish to place your contract specs somewhere else, simply change the
-path or URL in `test/contract/producer/setup_ctr_test.go`.
-
-```
-TODO actually implement example
-```
+Detailed documentation including some conceptual remarks can be found in the 
+[readme for go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/README.md)
 
 ...
