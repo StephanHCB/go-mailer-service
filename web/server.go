@@ -3,12 +3,15 @@ package web
 import (
 	"fmt"
 	"github.com/StephanHCB/go-mailer-service/internal/repository/configuration"
+	"github.com/StephanHCB/go-mailer-service/internal/service/emailsrv"
 	"github.com/StephanHCB/go-mailer-service/web/controller/emailctl"
 	"github.com/StephanHCB/go-mailer-service/web/controller/healthctl"
 	"github.com/StephanHCB/go-mailer-service/web/controller/swaggerctl"
+	"github.com/StephanHCB/go-mailer-service/web/middleware/ctxlogger"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
+	requestid "github.com/thanhhh/gin-requestid"
 )
 
 // use this for easy mocking
@@ -20,9 +23,12 @@ func Create() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 
 	server := gin.New()
-	server.Use(logger.SetLogger(), gin.Recovery())
+	server.Use(requestid.RequestID(),
+		logger.SetLogger(),
+		ctxlogger.AddZerologLoggerToRequestContext(),
+		gin.Recovery())
 
-	_ = emailctl.Create(server)
+	_ = emailctl.Create(server, emailsrv.Create())
 
 	healthctl.Create(server)
 

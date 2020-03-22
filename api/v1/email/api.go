@@ -2,6 +2,8 @@ package email
 
 import "github.com/gin-gonic/gin"
 
+// --- models ---
+
 // Model for EmailDto.
 //
 // swagger:model emailDto
@@ -14,7 +16,7 @@ type EmailDto struct {
 	Body      string `json:"body"`
 }
 
-// tip: this seems needed to express using a model
+// --- parameters and responses --- needed to use models
 
 // Parameters for sending Emails
 //
@@ -24,11 +26,23 @@ type SendEmailParams struct {
 	Body EmailDto
 }
 
+// The send email response with just a success status
+//
+// swagger:response sendEmailResponse
+type SendEmailResponse struct {
+}
+
+// --- routes ---
+
 type EmailApi interface {
-	// swagger:route GET /email/send email-tag sendEmailParams
-	// This will eventually send an email.
+	// swagger:route POST /api/rest/v1/sendmail email-tag sendEmailParams
+	// This will send an email.
 	//
 	// responses:
-	//   501: errorResponse
+	//   200: sendEmailResponse
+	//   400: errorResponse
+	//   401: errorResponse
+	//   403: errorResponse
+	//   500: errorResponse
 	SendEmail(*gin.Context)
 }

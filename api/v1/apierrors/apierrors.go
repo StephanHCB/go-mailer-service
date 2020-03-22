@@ -20,6 +20,8 @@ type ErrorDto struct {
 //
 // swagger:response errorResponse
 type ErrorResponse struct {
+	// The details of the error
+	//
 	// in:body
 	Body ErrorDto
 }

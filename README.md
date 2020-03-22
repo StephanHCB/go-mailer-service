@@ -222,13 +222,23 @@ side of this example.
         handler functions and passing around a `context.Context`. Might want to
         wrap it to give access just to what should be available?
 - Has a good example for [including static files in the binary](https://github.com/gin-gonic/examples/tree/master/assets-in-binary) 
+- The pre-made request logging library does not retrieve its logger from the context but instead uses
+  the global logger instance. This is nice and good, until you want to have your requestIds logged, too.
+  Then you are stuck coding up your own request logger middleware again.
+- The fact that gin insists on using its own context rather than the standard go context makes
+  it harder to wire up a lot of standard middlewares such as for authentication.
+- Gin uses printf for debug mode logging instead of the provided logger. You can turn it off, thankfully.
+
+In the end, the few lines of code saved are just not worth the additional hassle and complexities
+compared to Chi.
 
 ## Implementation Experience with Chi
 
-- It's much more low level, for example I needed to write actual code to serve static files
-- Smaller binary, much smaller dependencies footprint
-- Including static files in the binary can be done, too, but it needs a bit of implementation rather than a single line,
+- It's much more low level, for example I needed to write actual code to serve static files,
   see [this example](https://github.com/StephanHCB/go-campaign-service/blob/master/web/controller/swaggerctl/swaggerctl.go)
+- Smaller binary, much smaller dependencies footprint
+- It relies on standard context, handler and middleware functions, fully compatible with golangs standard
+  library. This makes it much easier to use third party middlewares. 
 
 ## Fulfilling the Requirements
 
