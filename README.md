@@ -387,9 +387,27 @@ that could be a ready-made library, really._
 
 ### Requirement: Tracing
 
+The chi framework comes with a standard middleware that will parse a `X-Request-Id` header if present, or 
+otherwise populate the context with a random string. This is set up by registering the middleware function:
+
 ```
-TODO
+server := chi.NewRouter()
+server.Use(middleware.RequestID)
 ```
+
+All you need to do is extract the string from the context and place it in the header again 
+when making an outgoing request.
+
+There are both advantages and disadvantages to including the request id on external calls.
+
+_Writing a matching middleware function for the gin framework is easy given the chi implementation 
+as a template, but I could not find a ready-made implementation._ 
+
+_This isn't a big loss, because
+the chi implementation does not cooperate correctly with 
+[Spring Cloud Sleuth](https://spring.io/projects/spring-cloud-sleuth) anyway, both the header and
+the exact format of the request ids are different. Again, this is a rather trivial change to make,
+and I have left this out here._
 
 ### Requirement: Monitoring
 
@@ -454,12 +472,48 @@ TODO
 
 #### Authentication and Authorization
 
-```
-TODO implement
-```
+There are ready-made libraries for handling and validating JWTs in golang, but the most complete
+and well-documented solution seem to be the MIT licensed open source client libraries provided 
+by [auth0](https://auth0.com). These
+also help you avoid a number of security pitfalls, like the infamous 
+[symmetric cipher key attack](https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries/) 
+that many implementations used to be vulnerable to.
+
+We used [auth0/go-jwt-middleware](https://github.com/auth0/go-jwt-middleware). With both the chi and gin frameworks, 
+you need to write a small amount of code to wrap their functions.
+The token is placed in the context in both raw and decoded form, so it becomes easy for handler functions
+to check claims to assert the user is logged in, or has a specific role, or for outgoing calls to include
+the `Authorization` header.
+
+Note that you will have to take care yourself not to include it on external calls, lest you expose
+a valid token to a third party.
+
+_One neat thing we came across while researching this subject was [dex](https://github.com/dexidp/dex),
+a full fledged OIDC / Oauth2 provider written in go with pluggable connectors written and supported by the coreos team,
+which even includes an OpenShift connector and an LDAP connector for easy federation._
+
+##### Security Acceptance and Contract Tests
+
+It is good practice to cover both incoming and outgoing requests with security related tests.
+
+We have implemented a few examples of how to cover incoming requests with acceptance tests that make sure
+
+* no access is granted if no Authorization header is provided
+* invalid header values, invalid/expired tokens, or tokens that do not have the necessary claims do not grant access
+* valid tokens grant access
+
+In a real world scenario the exposed amount of data might depend on properties
+of the token, this should also be tested.
 
 ```
-TODO security acceptance test example
+TODO implement security acceptance test example
+```
+
+Also, we have implemented a single contract test that ensures the outgoing request does not contain
+ the token for an external call.
+
+```
+TODO add security contract test example
 ```
 
 ### Requirement: Testing

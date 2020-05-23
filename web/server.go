@@ -7,6 +7,7 @@ import (
 	"github.com/StephanHCB/go-mailer-service/web/controller/emailctl"
 	"github.com/StephanHCB/go-mailer-service/web/controller/healthctl"
 	"github.com/StephanHCB/go-mailer-service/web/controller/swaggerctl"
+	"github.com/StephanHCB/go-mailer-service/web/middleware/authentication"
 	"github.com/StephanHCB/go-mailer-service/web/middleware/ctxlogger"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
@@ -26,6 +27,8 @@ func Create() *gin.Engine {
 	server.Use(requestid.RequestID(),
 		logger.SetLogger(),
 		ctxlogger.AddZerologLoggerToRequestContext(),
+		// TODO secret should come from configuration
+		authentication.AddJWTTokenInfoToContextHandlerFunc("hallo"),
 		gin.Recovery())
 
 	_ = emailctl.Create(server, emailsrv.Create())
