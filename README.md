@@ -8,7 +8,8 @@ This work was heavily inspired by
 - Erik Lupander's [Blog series about how to implement an enterprise microservice in go](https://callistaenterprise.se/blogg/teknik/2017/02/17/go-blog-series-part1/)
 - a talk by Mario-Leander Reimer I recently attended at [GoDays Berlin](https://www.youtube.com/watch?v=x26Q7iGpblw)
 - many many excellent libraries and examples, you will find links in the article below
-- ... and finally, [Spring Boot](https://spring.io/projects/spring-boot) and [Spring Cloud](https://spring.io/projects/spring-cloud).
+- ... and finally, [Spring Boot](https://spring.io/projects/spring-boot) and 
+  [Spring Cloud](https://spring.io/projects/spring-cloud).
 
 ## Overview
 
@@ -26,7 +27,7 @@ The business scenario is rather contrived and not really the point here:
   plus a subject and a body) and execute it, 
   using the mailer service
 
-But here's the catch, we are pretending to live in some hypothetical
+But here's the catch, I am pretending to work in some hypothetical
 enterprise that deploys its services as docker containers
 into seperate kubernetes installations
 (dev, staging, production). 
@@ -37,7 +38,8 @@ Effectively, that adds lots of nonfunctional requirements concerning:
 - **configuration** for multiple environments, with part of the configuration
   injected by the environment 
   - kubernetes provides configmaps and secrets, but we need to implement
-    loading yaml configuration and plan for multiple profiles
+    loading configuration either from yaml files or from
+    environment variables
   - for simplicity we assume that we can accept rolling restarts for
     configuration changes, so no hot reload mechanism must be provided
   - _feature toggles_
@@ -53,8 +55,8 @@ Effectively, that adds lots of nonfunctional requirements concerning:
    - _transport layer security_
        - exclusively communicate via https between services 
          (except on local developer machines), so outgoing calls
-         go to the route endpoint
-       - SSL termination for incoming calls done using kubernetes
+         go to an external load balancer and then through an ingress
+       - SSL termination for incoming calls is done using said load balancer
          (you don't even get to have the certificates for production!)
    - _authentication and authorization_
        - authentication ("who is making the request") is provided by an 
@@ -66,10 +68,11 @@ Effectively, that adds lots of nonfunctional requirements concerning:
          Also, the token must be passed on in outgoing calls, but only to other internal services
          participating in the auth domain.
        - part of the authorization ("are they allowed to do what is requested") 
-         is also derived from claims in the JWT
+         is also derived from claims in the JWT. I am going to use a namespaced roles claim
+         with the url pointing to this github repository.
 - **logging** must be JSON structured logging to the console, except
   on local developer machines, where this would reduce readability.
-  When running in kubernetes, we assume we want to log to console using 
+  When running in kubernetes, I assume we want to log to console using 
   [Elastic Common Schema](https://www.elastic.co/guide/en/ecs/current),
   so that log output can be shipped directly to logstash.
 - **monitoring**
@@ -81,13 +84,16 @@ Effectively, that adds lots of nonfunctional requirements concerning:
     - More specifically: In order to allow _request tracing_ across the 
       many existing Java Spring Boot/Spring Cloud services, every service 
       must propagate (and possibly create)
-      a zipkin compatible Request Id, which must be placed in the
+      a [zipkin](https://zipkin.io/)/[sleuth](https://spring.io/projects/spring-cloud-sleuth) 
+      compatible Request Id, which must therefore be picked up from and placed in the
       "X-B3-TraceId" header on each response and outgoing call.
 - **automated testing**
     - _unit tests_ cover all significant logic (examples only)
     - _acceptance tests_ for all endpoints
         - including negative/positive _security acceptance tests_
     - _consumer driven contract tests_ for all interactions between services
+        - including _security contract tests_ that ensure tokens are not propagated
+          where they should not go
     - _performance testing_
     - _load testing_
 
@@ -96,12 +102,13 @@ business scenario does not need them, or because this is after all a
 contrived example:
 - we won't do _client side load balancing_ for additional **resilience**,
   mainly because for that to make sense, it would also require to move 
-  parts of discovery away from kubernetes standard router features.
-  
+  parts of discovery away from kubernetes standard service and ingress
+  features.
+
   In a real world scenario, this could easily happen though. 
   Just think of scaling out the mailer service to some cloud provider, 
-  so that some of its instances run in AWS while others are run on premise.
-- our use case does not require service node **coordination** beyond 
+  so that some of its instances run there while others are run on premise.
+- my use case does not require service node **coordination** beyond 
   sharing the same database, which is simply assumed to be clustered
     - e.g. _partition tolerance_ is not considered here beyond the 
       standard kubernetes features
@@ -168,7 +175,7 @@ in the [go-campaign-service](https://github.com/StephanHCB/go-campaign-service) 
 the contract specification. 
 
 You are expected to clone that repository into a directory called `go-campaign-service`
-right next to this repository. If you wish to place your contract specs somewhere else, simply change the
+right next to a clone of this repository. If you wish to place your contract specs somewhere else, simply change the
 path or URL in `test/contract/producer/setup_ctr_test.go`. 
 
 ```
@@ -238,7 +245,9 @@ compared to Chi.
   see [this example](https://github.com/StephanHCB/go-campaign-service/blob/master/web/controller/swaggerctl/swaggerctl.go)
 - Smaller binary, much smaller dependencies footprint
 - It relies on standard context, handler and middleware functions, fully compatible with golangs standard
-  library. This makes it much easier to use third party middlewares. 
+  library. This makes it much easier to use third party middlewares.
+
+Chi will be the framework of choice for me for future microservices.
 
 ## Fulfilling the Requirements
 
