@@ -505,9 +505,8 @@ We have implemented a few examples of how to cover incoming requests with accept
 In a real world scenario the exposed amount of data might depend on properties
 of the token, this should also be tested.
 
-```
-TODO implement security acceptance test example
-```
+See the [acceptance tests for the campaign controller of go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/test/acceptance/campaign_acc_test.go)
+for an example.
 
 Also, we have implemented a single contract test that ensures the outgoing request does not contain
  the token for an external call.
@@ -569,6 +568,19 @@ database at run-time, and make the selection a configuration switch.
 [smartystreets/goconvey](https://github.com/smartystreets/goconvey) provides a convenient library for
 writing your acceptance tests BDD-style (given/when/then) including in-browser reports.
 
+See the [acceptance tests for the campaign controller of go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/test/acceptance/campaign_acc_test.go)
+for an example, including some example security tests that make sure unauthorized/unauthenticated access
+does not work.
+
+_There are, however, some downsides to using goconvey. For one thing, go does not have test dependencies,
+so any dependency you pull in for testing ends up increasing the size of your binary. If you do not really
+need the reports, or if the service you are writing is especially security critical and you wish to minimize
+code footprint, it may be better to just
+implement a few small logging functions as I have done in this service in the `docs` package, see `docs/testdocs.go`._
+
+_See the [acceptance tests for the service startup of this service](https://github.com/StephanHCB/go-mailer-service/blob/master/test/acceptance/startup_acc_test.go)
+for an example of this hand-coded alternative approach._
+
 #### Consumer Driven Contract Tests
 
 This microservice uses [pact-go](https://github.com/pact-foundation/pact-go#installation) for contract tests.
@@ -576,4 +588,6 @@ This microservice uses [pact-go](https://github.com/pact-foundation/pact-go#inst
 Detailed documentation including some conceptual remarks can be found in the 
 [readme for go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/README.md)
 
-...
+```
+TODO implement full example
+```

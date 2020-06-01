@@ -1,25 +1,23 @@
 package acceptance
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/StephanHCB/go-mailer-service/docs"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
 )
 
 func TestStartupWithValidConfig_ShouldBeHealthy(t *testing.T) {
-	Convey("Given a valid configuration", t, func() {
-		configAndSecretsPath := tstValidConfigurationPath
+	docs.Given("Given a valid configuration")
+	configAndSecretsPath := tstValidConfigurationPath
 
-		Convey("When the application is started", func() {
-			tstSetup(configAndSecretsPath)
-			defer tstShutdown()
+	docs.When("When the application is started")
+	tstSetup(configAndSecretsPath)
+	defer tstShutdown()
 
-			Convey("Then it reports as healthy", func() {
-				response, err := tstPerformGet("/health", tstUnauthenticated())
+	docs.Then("Then it reports as healthy")
+	response, err := tstPerformGet("/health", tstUnauthenticated())
 
-				So(err, ShouldEqual, nil)
-				So(response.status, ShouldEqual, http.StatusOK)
-			})
-		})
-	})
+	require.Nil(t, err)
+	require.Equal(t, http.StatusOK, response.status)
 }
