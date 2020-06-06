@@ -232,6 +232,8 @@ side of this example.
 - The pre-made request logging library does not retrieve its logger from the context but instead uses
   the global logger instance. This is nice and good, until you want to have your requestIds logged, too.
   Then you are stuck coding up your own request logger middleware again.
+- The pre-made gin requestId middleware is completely useless - it doesn't read an existing
+  requestId from the relevant header, if present, but instead always generates a new requestId
 - The fact that gin insists on using its own context rather than the standard go context makes
   it harder to wire up a lot of standard middlewares such as for authentication.
 - Gin uses printf for debug mode logging instead of the provided logger. You can turn it off, thankfully.
@@ -409,19 +411,26 @@ server := chi.NewRouter()
 server.Use(middleware.RequestID)
 ```
 
-All you need to do is extract the string from the context and place it in the header again 
+You can also change the header it will use:
+
+```
+middleware.RequestIDHeader = "X-B3-TraceId"
+```
+
+Now all you need to do is extract the string from the context and place it in the header again 
 when making an outgoing request.
 
 There are both advantages and disadvantages to including the request id on external calls.
 
-_Writing a matching middleware function for the gin framework is easy given the chi implementation 
-as a template, but I could not find a ready-made implementation._ 
+_The chi implementation cooperates with 
+[Spring Cloud Sleuth](https://spring.io/projects/spring-cloud-sleuth) if you change the name
+of the header as shown above, which is conveniently exposed for just this purpose._
 
-_This isn't a big loss, because
-the chi implementation does not cooperate correctly with 
-[Spring Cloud Sleuth](https://spring.io/projects/spring-cloud-sleuth) anyway, both the header and
-the exact format of the request ids are different. Again, this is a rather trivial change to make,
-and I have left this out here._
+_Although gin pretends to support request ids, I could not find a ready-made implementation that really did what's needed.
+I was pretty disappointed when I found out that gin's requestId middleware always creates a new
+request id for each request instead of taking it from the request header if one is already present.
+No distributed tracing for you I guess, just request logging. Instead you are treated to a statistical discussion of the 
+probability of collisions in the comments..._
 
 ### Requirement: Monitoring
 
