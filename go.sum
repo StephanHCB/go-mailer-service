@@ -2,12 +2,10 @@ cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMT
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
-github.com/StephanHCB/go-autumn-config v0.1.5 h1:mrAvQ3z042JzZ7v/HtbnM78koyiPdVUQakFt5mjqOMQ=
-github.com/StephanHCB/go-autumn-config v0.1.5/go.mod h1:RrVtlbTsN9gUGdkWR5QrLDVCa/KVH9TIqP2ub/bdJYs=
-github.com/StephanHCB/go-autumn-config-api v0.1.2 h1:Wx7vYPFqzg9S7p/OinFNtLhZGSbDKoOenyow1GnTbQE=
-github.com/StephanHCB/go-autumn-config-api v0.1.2/go.mod h1:6nJBwuT1uURHApOSFr6Rw+naK2YkO+sAduwEWZ0qsSU=
-github.com/StephanHCB/go-autumn-config-api v0.1.5 h1:4b+KG9VT4jNMkAy0Dg8V7qoMNilbdsFrNxgnzB3eZbk=
-github.com/StephanHCB/go-autumn-config-api v0.1.5/go.mod h1:6nJBwuT1uURHApOSFr6Rw+naK2YkO+sAduwEWZ0qsSU=
+github.com/StephanHCB/go-autumn-config v0.2.0 h1:+eQHkhLb8qMHTl9t1pTpUBQ6Ue/azMj2qUhI2cj4XEU=
+github.com/StephanHCB/go-autumn-config v0.2.0/go.mod h1:zr1uRR4XhbNteOXhS2eYrNhRxtvVTgSvoFoWDbo97ns=
+github.com/StephanHCB/go-autumn-config-api v0.2.0 h1:XxJl5zNdqgbuKDn80w3VDlAfnqhie48EZK18UCdVy5g=
+github.com/StephanHCB/go-autumn-config-api v0.2.0/go.mod h1:6nJBwuT1uURHApOSFr6Rw+naK2YkO+sAduwEWZ0qsSU=
 github.com/StephanHCB/go-autumn-web-swagger-ui v0.1.1 h1:51gbl5dLWn6Ly5b05f3OYmuf8wdyIOPM0LFvVgDsgts=
 github.com/StephanHCB/go-autumn-web-swagger-ui v0.1.1/go.mod h1:yUgtgpY0sgUopu9CNukBb83rrswh6xMBX7PS/fia91U=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=

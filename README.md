@@ -283,7 +283,12 @@ and then I just have to code up a single function that uses these values to conf
 _**Update:** I have written such a library and called 
 it [go-autumn-config](https://github.com/StephanHCB/go-autumn-config)._
 
-_**Update:** And only one day after my own version, I found [alexflint/go-arg](https://github.com/alexflint/go-arg)._
+_This library now even supports structured configuration values. See the README for an example how to use
+[mitchellh/mapstructure](https://github.com/mitchellh/mapstructure) to get the structured data out._
+
+_**Update:** I also 
+found [alexflint/go-arg](https://github.com/alexflint/go-arg), which provides a very lightweight solution
+if all you need are command line arguments and environment variables and need no support for yaml files._
 
 #### Feature Toggles
 
