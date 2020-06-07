@@ -481,15 +481,20 @@ TODO
 
 [Go Microservices blog series, part 11 - hystrix and resilience](https://callistaenterprise.se/blogg/teknik/2017/09/11/go-blog-series-part11/)
 
-[Don't use go's default http client](https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779)
+[Don't use go's default http client](https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779) - the
+main point being, it has no timeout.
 
-[A rant that nevertheless has useful tips](https://fasterthanli.me/blog/2020/i-want-off-mr-golangs-wild-ride/)
-(but some of the http client points of criticism would have been completely solved by using hystrix as shown
-in the first article)
+[A rant that nevertheless has useful tips](https://fasterthanli.me/blog/2020/i-want-off-mr-golangs-wild-ride/) -
+but most of the points of criticism regarding the http client would have been completely solved by using hystrix.
 
-```
-TODO
-```
+_I have implemented a small utility package that demonstrates how to use 
+[afex/hystrix-go](https://github.com/afex/hystrix-go) and the standard http client safely, providing both
+a circuit breaker and a timeout. I have opted not to implement a retry mechanism for this example.
+See [the downstreamcall package in go-campaign-service](https://github.com/StephanHCB/go-campaign-service/tree/master/internal/repository/util/downstreamcall).
+This also adds the request id to any outgoing requests._
+
+_I have also implemented a few lines of 
+[middleware to always add the request id header to the response](https://github.com/StephanHCB/go-campaign-service/blob/master/web/middleware/requestidinresponse/addresponseheader.go)._
 
 ### Requirement: Security
 
