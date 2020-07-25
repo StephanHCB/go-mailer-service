@@ -8,6 +8,7 @@ import (
 const configKeyServerAddress = "server.address"
 const configKeyServerPort = "server.port"
 const configKeyServiceName = "service.name"
+const configKeySecuritySecret = "security.secret"
 
 var configItems = []auconfigapi.ConfigItem{
 	auconfig.ConfigItemProfile,
@@ -25,6 +26,13 @@ var configItems = []auconfigapi.ConfigItem{
 		Key:         configKeyServiceName,
 		Default:     "unnamed-service",
 		Description: "name of service, used for logging",
+		Validate:    func(key string) error { return checkLength(1, 255, key) },
+	},
+	// security configuration
+	{
+		Key:         configKeySecuritySecret,
+		Default:     "",
+		Description: "secret used for signing jwt tokens",
 		Validate:    func(key string) error { return checkLength(1, 255, key) },
 	},
 }

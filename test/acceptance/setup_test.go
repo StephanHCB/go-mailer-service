@@ -3,6 +3,7 @@ package acceptance
 import (
 	"github.com/StephanHCB/go-mailer-service/internal/repository/configuration"
 	"github.com/StephanHCB/go-mailer-service/internal/repository/logging"
+	"github.com/StephanHCB/go-mailer-service/internal/service/emailsrv"
 	"github.com/StephanHCB/go-mailer-service/web"
 	"net/http/httptest"
 )
@@ -15,7 +16,7 @@ var (
 	warnings []string
 )
 
-const tstValidConfigurationPath =  "resources/validconfig"
+const tstValidConfigurationPath =  "../resources/validconfig"
 
 func tstSetup(configAndSecretsPath string) {
 	tstSetupConfig(configAndSecretsPath, configAndSecretsPath)
@@ -48,6 +49,7 @@ func tstHadFailures() bool {
 
 func tstSetupHttpTestServer() {
 	router := web.Create()
+	web.AddRoutes(router, emailsrv.Create())
 	ts = httptest.NewServer(router)
 }
 

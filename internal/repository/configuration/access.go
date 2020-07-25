@@ -19,3 +19,7 @@ func IsProfileActive(profileName string) bool {
 	profiles := viper.GetStringSlice("profiles")
 	return contains(profiles, profileName)
 }
+
+func SecuritySecret() string {
+	return viper.GetString(configKeySecuritySecret)
+}

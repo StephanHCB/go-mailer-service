@@ -28,20 +28,24 @@ func Create() *gin.Engine {
 		logger.SetLogger(),
 		ctxlogger.AddZerologLoggerToRequestContext(),
 		// TODO secret should come from configuration
-		authentication.AddJWTTokenInfoToContextHandlerFunc("hallo"),
+		authentication.AddJWTTokenInfoToContextHandlerFunc(configuration.SecuritySecret()),
 		gin.Recovery())
-
-	_ = emailctl.Create(server, emailsrv.Create())
-
-	healthctl.Create(server)
-
-	swaggerctl.SetupSwaggerRoutes(server)
 
 	return server
 }
 
+func AddRoutes(server *gin.Engine, emailService emailsrv.EmailService) {
+	_ = emailctl.Create(server, emailService)
+
+	healthctl.Create(server)
+
+	swaggerctl.SetupSwaggerRoutes(server)
+}
+
 func Serve() {
 	server := Create()
+
+	AddRoutes(server, emailsrv.Create())
 
 	address := configuration.ServerAddress()
 	log.Info().Msg("Starting web server on " + address)
