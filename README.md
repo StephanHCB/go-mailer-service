@@ -613,9 +613,7 @@ for an example of this hand-coded alternative approach._
 
 This microservice uses [pact-go](https://github.com/pact-foundation/pact-go#installation) for contract tests.
 
-Detailed documentation including some conceptual remarks can be found in the 
-[readme for go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/README.md)
+This is the producer side, see `test/contract/producer/sendmail_ctr_test.go` for the implementation.
 
-```
-TODO implement full example
-```
+Detailed documentation including setup instructions and some conceptual remarks can be found in the 
+[readme for go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/README.md)
