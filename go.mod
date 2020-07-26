@@ -6,6 +6,7 @@ require (
 	github.com/StephanHCB/go-autumn-config v0.2.0
 	github.com/StephanHCB/go-autumn-config-api v0.2.0
 	github.com/StephanHCB/go-autumn-web-swagger-ui v0.1.1
+	github.com/armon/go-metrics v0.3.3
 	github.com/auth0/go-jwt-middleware v0.0.0-20200507191422-d30d7b9ece63
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/logger v0.0.2

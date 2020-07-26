@@ -9,6 +9,9 @@ const configKeyServerAddress = "server.address"
 const configKeyServerPort = "server.port"
 const configKeyServiceName = "service.name"
 const configKeySecuritySecret = "security.secret"
+const configKeyMetricsEnable = "metrics.push.enable"
+const configKeyMetricsAddress = "metrics.push.address"
+const configKeyMetricsName = "metrics.push.name"
 
 var configItems = []auconfigapi.ConfigItem{
 	auconfig.ConfigItemProfile,
@@ -34,5 +37,22 @@ var configItems = []auconfigapi.ConfigItem{
 		Default:     "",
 		Description: "secret used for signing jwt tokens",
 		Validate:    func(key string) error { return checkLength(1, 255, key) },
+	},
+	// prometheus configuration
+	{
+		Key:         configKeyMetricsEnable,
+		Default:     false,
+		Description: "enable push to prometheus server",
+		Validate:    auconfigapi.ConfigNeedsNoValidation,
+	}, {
+		Key:         configKeyMetricsAddress,
+		Default:     "localhost:9090",
+		Description: "prometheus server address, format host:port",
+		Validate:    auconfigapi.ConfigNeedsNoValidation,
+	}, {
+		Key:         configKeyMetricsName,
+		Default:     "somesink",
+		Description: "push sink name",
+		Validate:    auconfigapi.ConfigNeedsNoValidation,
 	},
 }

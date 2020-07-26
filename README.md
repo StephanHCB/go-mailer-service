@@ -178,10 +178,6 @@ You are expected to clone that repository into a directory called `go-campaign-s
 right next to a clone of this repository. If you wish to place your contract specs somewhere else, simply change the
 path or URL in `test/contract/producer/setup_ctr_test.go`. 
 
-```
-TODO: implement a real world example 
-```
-
 See the [readme for go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/README.md) for 
 installation instructions for the required tooling.
 
@@ -444,9 +440,35 @@ connection pool for an abundance of error states before reporting healthy.
 
 #### Prometheus Integration 
 
-```
-TODO
-```
+There are two general ways to interact with [Prometheus](https://prometheus.io/), 
+either you let Prometheus pull metrics from you (providing a
+metrics endpoint, usually on a separate port that is not exposed), or you regularly push your metrics to Prometheus.
+
+##### Pull Implementation
+
+Following [this guide](https://prometheus.io/docs/guides/go-application/), we have implemented the standard
+`/metrics` endpoint on a separate port in 
+[go-campaign-service/web/metricsserver.go](https://github.com/StephanHCB/go-campaign-service/blob/master/web/metricsserver.go)
+using [github.com/prometheus/client_golang](https://github.com/prometheus/client_golang)'s `promhttp.Handler()` 
+ready-made handler function.
+
+_Note how we use a goroutine to start the http server, as http.ListenAndServe() never returns. We have 
+not secured this endpoint in this example, but adding that would be trivial, just add the relevant middleware._
+
+The guide also describes how to add custom counters, as it is this only exposes the default metrics. Also take a
+look at [766b/chi-prometheus](https://github.com/766b/chi-prometheus) for a basic middleware for the chi framework 
+that gives you request metrics. 
+
+_A single histogram for response times is probably too coarse grained, so in a real-world situation I would
+probably adapt this code for our needs._ 
+
+##### Push Implementation  
+
+If you wish to go with the push model, there is a ready-made libary called 
+[armon/go-metrics](https://github.com/armon/go-metrics).
+
+_See `internal/repository/metricspush/setup.go` for the very simple setup, and `internal/service/emailsrv/emailsrv.go`
+for a one-liner that times execution._
 
 ### Requirement: Persistence
 
@@ -536,12 +558,14 @@ of the token, this should also be tested.
 See the [acceptance tests for the campaign controller of go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/test/acceptance/campaign_acc_test.go)
 for an example.
 
-Also, we have implemented a single contract test that ensures the outgoing request does not contain
- the token for an external call.
+In order to assure that outgoing requests to third party systems do not forward the oauth token, and in order to
+test our assumptions about the interface offered by the third party system, we should write contract tests
+that only have a consumer side. 
 
-```
-TODO add security contract test example
-```
+_As we do not make requests to third parties in our contrived example, we have omitted this, but it works
+exactly as described in the 
+[readme for go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/README.md),
+only that instead of testing for the presence of the authorization header, you test for its absence._
 
 ### Requirement: Testing
 

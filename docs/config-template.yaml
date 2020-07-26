@@ -2,3 +2,8 @@ server:
   port: 8080
 service:
   name: mailer-service
+metrics:
+  push:
+    enable: false
+    address: 'localhost:9090'
+    name: sink-name

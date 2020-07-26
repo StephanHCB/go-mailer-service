@@ -3,7 +3,9 @@ package emailsrv
 import (
 	"context"
 	"github.com/StephanHCB/go-mailer-service/internal/entity"
+	"github.com/armon/go-metrics"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 type EmailServiceImpl struct {
@@ -26,6 +28,8 @@ func (e *EmailServiceImpl) SendEmail(ctx context.Context, email *entity.Email) e
 		log.Ctx(ctx).Warn().Msgf("business validation for email failed - rejected: %v", err.Error())
 		return err
 	}
+
+	defer metrics.MeasureSince([]string{"SendEmail"}, time.Now())
 
 	// TODO implement call to send email
 

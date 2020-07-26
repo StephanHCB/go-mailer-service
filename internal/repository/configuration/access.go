@@ -23,3 +23,15 @@ func IsProfileActive(profileName string) bool {
 func SecuritySecret() string {
 	return viper.GetString(configKeySecuritySecret)
 }
+
+func EnableMetricsPush() bool {
+	return viper.GetBool(configKeyMetricsEnable)
+}
+
+func MetricsPushAddress() string {
+	return viper.GetString(configKeyMetricsAddress)
+}
+
+func MetricsPushSinkName() string {
+	return viper.GetString(configKeyMetricsName)
+}
