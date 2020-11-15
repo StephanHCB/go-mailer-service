@@ -397,6 +397,9 @@ logging middleware from looking at the code and
 _One problem I faced in both cases was that the field names all had to be adjusted to match the ECS standard. Another thing
 that could be a ready-made library, really._
 
+_**Update:** I have started a library that configures ECS logging out of the box for zerolog, right now not all fields are configured:
+[go-autumn-logging-zerolog](https://github.com/StephanHCB/go-autumn-logging-zerolog)._
+
 ### Requirement: Tracing
 
 The chi framework comes with a standard middleware that will parse a `X-Request-Id` header if present, or 
