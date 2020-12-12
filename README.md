@@ -242,8 +242,9 @@ compared to Chi.
 - It's much more low level, for example I needed to write actual code to serve static files,
   see [this example](https://github.com/StephanHCB/go-campaign-service/blob/master/web/controller/swaggerctl/swaggerctl.go)
 - Smaller binary, much smaller dependencies footprint
-- It relies on standard context, handler and middleware functions, fully compatible with golangs standard
+- It relies on standard context, handler and middleware functions, fully compatible with golang's standard
   library. This makes it much easier to use third party middlewares.
+- Chi provides a number of [pre-made middlewares](https://github.com/go-chi)
 
 Chi will be the framework of choice for me for future microservices.
 
@@ -425,6 +426,16 @@ _The chi implementation cooperates with
 [Spring Cloud Sleuth](https://spring.io/projects/spring-cloud-sleuth) if you change the name
 of the header as shown above, which is conveniently exposed for just this purpose._
 
+_I have implemented a few lines of 
+[middleware to always add the request id header to the response](https://github.com/StephanHCB/go-campaign-service/blob/master/web/middleware/requestidinresponse/addresponseheader.go)._
+
+Another available tracing middleware for chi is [go-chi/httptracer](https://github.com/go-chi/httptracer),
+which integrates OpenTracing via [opentracing/opentracing-go](https://github.com/opentracing/opentracing-go).
+
+_This implementation is not compatible with the default configuration of Spring Cloud Sleuth,
+so I have not included it, but if Sleuth/Zipkin compatibility is not an issue, you get much more
+detailed tracing, including spans for concurrent invocations._ 
+
 _Although gin pretends to support request ids, I could not find a ready-made implementation that really did what's needed.
 I was pretty disappointed when I found out that gin's requestId middleware always creates a new
 request id for each request instead of taking it from the request header if one is already present.
@@ -498,11 +509,38 @@ contributor work._
 
 ### Requirement: Messaging
 
+A good introduction to Kafka in golang is 
+[Getting Started with Kafka in Golang](https://medium.com/@yusufs/getting-started-with-kafka-in-golang-14ccab5fa26).
+
+[Microservices with kafka and google protobuf](https://medium.com/@self.maurya/building-a-microservice-with-with-golang-kafka-and-dynamodb-part-i-552cc4816ff)
+has some brief code snippets, 
+[part 2](https://medium.com/@self.maurya/building-a-microservice-with-golang-kafka-and-dynamodb-part-ii-4c2def48a5dc) contains some tips for performance optimization
+
+Although I have not had a chance to try kafka with golang, 
+[segmentio/kafka-go(https://github.com/segmentio/kafka-go) looks like the most promising candidate.
+The documentation lists the advantages over other approaches:
+  - pure golang
+  - compat with 0.10.1-2.1.0+
+  -	active development
+
 ```
-TODO
+TODO implement Kafka integration example
+```
+
+Other promising libraries I found for Kafka integration:
+  - [Shopify/sarama](https://github.com/Shopify/sarama) MIT licensed, also under active development
+    - [Documentation](https://godoc.org/github.com/Shopify/sarama)
+    - pure golang
+    - https://github.com/bsm/sarama-cluster <- cluster extension, DEPRECATED
+  - [confluentinc/confluent-kafka-go](https://github.com/confluentinc/confluent-kafka-go)
+
+```
+TODO evaluate these
 ```
 
 ### Requirement: Resilience
+
+#### Resilience for Outgoing Requests - Circuit Breaker and Timeouts
 
 [Go Microservices blog series, part 11 - hystrix and resilience](https://callistaenterprise.se/blogg/teknik/2017/09/11/go-blog-series-part11/)
 
@@ -518,8 +556,26 @@ a circuit breaker and a timeout. I have opted not to implement a retry mechanism
 See [the downstreamcall package in go-campaign-service](https://github.com/StephanHCB/go-campaign-service/tree/master/internal/repository/util/downstreamcall).
 This also adds the request id to any outgoing requests._
 
-_I have also implemented a few lines of 
-[middleware to always add the request id header to the response](https://github.com/StephanHCB/go-campaign-service/blob/master/web/middleware/requestidinresponse/addresponseheader.go)._
+#### Resilience for Incoming Requests - Timeouts
+
+Among other things, [So you want to expose Go on the Internet](https://blog.cloudflare.com/exposing-go-on-the-internet/)
+mentions the need to configure request timeouts to allow recovery from overload or even a DOS attack.
+
+```
+TODO configure timeouts instead of simply using ListenAndServe with the default server:
+
+srv := &http.Server{
+    ReadTimeout:  5 * time.Second,
+    WriteTimeout: 10 * time.Second,
+    IdleTimeout:  120 * time.Second,
+    // TLSConfig:    tlsConfig,
+    Handler:      serveMux,
+}
+srv.ListenAndServe(...)
+```
+
+_Unfortunately, with the gin framework this is made needlessly hard, because the ListenAndServe
+call is hidden inside gin's `Run()` method, which you will have to duplicate._
 
 ### Requirement: Security
 
@@ -541,9 +597,20 @@ the `Authorization` header.
 Note that you will have to take care yourself not to include it on external calls, lest you expose
 a valid token to a third party.
 
+```
+TODO implement a token passthrough whitelist
+
+in httpcall.go in campaign-service only forward authentication if url is in an address whitelist
+```
+
+##### Identity Providers in Golang
+
 _One neat thing we came across while researching this subject was [dex](https://github.com/dexidp/dex),
 a full fledged OIDC / Oauth2 provider written in go with pluggable connectors written and supported by the coreos team,
 which even includes an OpenShift connector and an LDAP connector for easy federation._
+
+_Another similar project is [hydra](https://www.ory.sh/hydra/docs/),
+an identity provider written in go._
 
 ##### Security Acceptance and Contract Tests
 
@@ -569,6 +636,13 @@ _As we do not make requests to third parties in our contrived example, we have o
 exactly as described in the 
 [readme for go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/README.md),
 only that instead of testing for the presence of the authorization header, you test for its absence._
+
+#### TLS Termination
+
+In our scenario, TLS termination is provided by a load balancer or by HAProxy.
+
+If you wish to directly expose golang, [So you want to expose Go on the Internet](https://blog.cloudflare.com/exposing-go-on-the-internet/)
+is a must-read. 
 
 ### Requirement: Testing
 
