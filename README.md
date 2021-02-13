@@ -10,6 +10,9 @@ This work was heavily inspired by
 - many many excellent libraries and examples, you will find links in the article below
 - ... and finally, [Spring Boot](https://spring.io/projects/spring-boot) and 
   [Spring Cloud](https://spring.io/projects/spring-cloud).
+  
+I would also like to thank several individual contributors who have contacted me with
+suggestions and improvements.
 
 ## Overview
 
@@ -118,6 +121,7 @@ contrived example:
   considerations not taken into account here. Some examples:
   - _security logging_
   - _dependency and vulnerability scanning_
+  - _access revocation_ in a shorter time span than the expiry time of the token
   - ...
 
 For each of the requirement areas written in bold face above, you will find 
@@ -244,7 +248,9 @@ compared to Chi.
 - Smaller binary, much smaller dependencies footprint
 - It relies on standard context, handler and middleware functions, fully compatible with golang's standard
   library. This makes it much easier to use third party middlewares.
-- Chi provides a number of [pre-made middlewares](https://github.com/go-chi)
+- Chi provides a number of [pre-made middlewares](https://github.com/go-chi). They have recently updated their
+  documentation and the list is slowly growing. Besides, go-chi handlers are compatible with net/http, so
+  a lot of third party middlewares will also work out of the box.
 
 Chi will be the framework of choice for me for future microservices.
 
@@ -429,6 +435,16 @@ of the header as shown above, which is conveniently exposed for just this purpos
 _I have implemented a few lines of 
 [middleware to always add the request id header to the response](https://github.com/StephanHCB/go-campaign-service/blob/master/web/middleware/requestidinresponse/addresponseheader.go)._
 
+_I am not particularly happy with the way the request id is constructed in this middleware. It constructs it
+from the hostname followed by a counter. While fine for logging, if a bit lengthy, this becomes a problem when you wish to expose
+the request id to end users or api clients in error messages and responses.
+- It exposes your internal host names. If your service runs in a kubernetes pod in production, then this isn't much
+of an issue, though.
+- It is prone to errors when receiving support requests. End users may misread the number and you have no way
+to validate it.
+For these reasons, I prefer the request id to be made up of a random hex string of, say, 8 or 12 characters (depending on throughput).
+The code is easily adapted, of course._
+
 Another available tracing middleware for chi is [go-chi/httptracer](https://github.com/go-chi/httptracer),
 which integrates OpenTracing via [opentracing/opentracing-go](https://github.com/opentracing/opentracing-go).
 
@@ -562,13 +578,12 @@ Among other things, [So you want to expose Go on the Internet](https://blog.clou
 mentions the need to configure request timeouts to allow recovery from overload or even a DOS attack.
 
 ```
-TODO configure timeouts instead of simply using ListenAndServe with the default server:
-
 srv := &http.Server{
     ReadTimeout:  5 * time.Second,
     WriteTimeout: 10 * time.Second,
     IdleTimeout:  120 * time.Second,
     // TLSConfig:    tlsConfig,
+    Addr:         address,
     Handler:      serveMux,
 }
 srv.ListenAndServe(...)
@@ -576,6 +591,38 @@ srv.ListenAndServe(...)
 
 _Unfortunately, with the gin framework this is made needlessly hard, because the ListenAndServe
 call is hidden inside gin's `Run()` method, which you will have to duplicate._
+
+_Other than the http server timeouts, chi also comes with a 
+[middleware that sets up a timeout](https://pkg.go.dev/github.com/go-chi/chi/middleware#Timeout) on
+the context, calling `ctx.Done()` and returning http status 504 to the caller. 
+This will not abort processing the request unless you also regularly check the timeout channel set up
+on the context provided with the http request in long running operations._
+
+```
+func ErrIfTimeout(ctx context.Context) error {
+    select {
+        case <-ctx.Done():
+            return errors.New("operation timed out") 
+        default:
+            return nil
+    }
+}
+```
+
+_This will only work if you take care that there is a timeout on every blocking 
+operation (within reason). For http requests, see the section about circuit breakers. Also remember
+to configure timeouts for your database operations (can usually be done at the connection level)
+and for things such as messaging._
+
+#### Resilience for Incoming Requests - Throttling and DoS protection
+
+The chi framework offers 
+[middleware that can limit the amount of concurrently processed requests](https://pkg.go.dev/github.com/go-chi/chi/middleware#Throttle).
+This can help mitigate some overload situations and allow you to open upstream circuit breakers early, 
+but for any serious DoS attack, this will not really 
+help you. DoS protection needs to be put in place before the requests even reach your service instance.
+
+For this reason, I have opted to omit throttling from this example.
 
 ### Requirement: Security
 
