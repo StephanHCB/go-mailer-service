@@ -145,6 +145,10 @@ all required dependencies by default.
 
 If you change or add a dependency, you will need to do `go build main.go` to clone or update dependencies.
 
+_You can find more details about go modules in this 
+[detailed article](https://dev.to/maelvls/why-is-go111module-everywhere-and-everything-about-go-modules-24k), including a description
+of the `GO111MODULE` environment variable and how its meaning changed across go versions._
+
 ### Running on Localhost
 
 On the command line, `go build main.go` will download all dependencies and build a standalone executable
@@ -765,3 +769,11 @@ This is the producer side, see `test/contract/producer/sendmail_ctr_test.go` for
 
 Detailed documentation including setup instructions and some conceptual remarks can be found in the 
 [readme for go-campaign-service](https://github.com/StephanHCB/go-campaign-service/blob/master/README.md)
+
+## Docker build
+
+```
+TODO finalize Dockerfile in go-campaign-service
+
+TODO document details of the docker build
+```
